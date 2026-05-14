@@ -49,7 +49,7 @@ class ControlParameters:
     START_ETX_RX      = ParametersType("ER")
     ETX_COUNT         = ParametersType("EC")
 
-class CommandParameters:
+class RoutingParameters:
     """
     @enum
     """
@@ -264,8 +264,8 @@ CONTROL_RULES: "Dict[ParametersType, ParameterRule]" = {
     },
 }
 
-COMMAND_RULES: "Dict[ParametersType, ParameterRule]" = {
-    CommandParameters.PATH_UPDATE : {
+ROUTING_RULES: "Dict[ParametersType, ParameterRule]" = {
+    RoutingParameters.PATH_UPDATE : {
         "argc": 1,
         "validator": validate_path_update
     },
@@ -274,7 +274,7 @@ COMMAND_RULES: "Dict[ParametersType, ParameterRule]" = {
 ALL_RULES: "Dict[ParametersType, ParameterRule]" = {}
 ALL_RULES.update(PARAMETERS_RULES)
 ALL_RULES.update(CONTROL_RULES)
-ALL_RULES.update(COMMAND_RULES)
+ALL_RULES.update(ROUTING_RULES)
 
 def extract_parameters(
     message: "Message",

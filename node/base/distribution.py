@@ -1,7 +1,7 @@
 from models.packet import Packet
 from models.packet_type import PacketKind
 
-from node.protocol.parameters import CommandParameters, Parameters, add_parameter, add_timestamp
+from node.protocol.parameters import RoutingParameters, Parameters, add_parameter, add_timestamp
 
 try:
     from typing import TYPE_CHECKING
@@ -70,7 +70,7 @@ class RoutingDistributor:
         table: "RoutingTable"
     ) -> "Message":
         hex_payload = table.serialize().hex()
-        message = add_parameter(None, CommandParameters.PATH_UPDATE, hex_payload)
+        message = add_parameter(None, RoutingParameters.PATH_UPDATE, hex_payload)
         message = add_parameter(message, Parameters.DESTINATION, str(int(destination)))
         message = add_timestamp(self.base_node.rtc.datetime, message)
         return message

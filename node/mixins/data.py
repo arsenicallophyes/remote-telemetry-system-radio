@@ -102,6 +102,7 @@ class DataMixin(NodeState):
             self,
             packet: Packet,
             channel_info: Optional[Tuple[Frequency, BandAirtime, float]] = None,
+            show_usage : bool = False,
         ) -> None: ...
 
         def apply_link_profile(
@@ -204,7 +205,7 @@ class DataMixin(NodeState):
         #     peer.transmit.increment_data_sequence()
         #     return True
 
-        self.send_packet(packet, channel_info)
+        self.send_packet(packet, channel_info, True)
         if not self.retransmit:
             peer.transmit.increment_data_sequence()
 
@@ -419,7 +420,6 @@ class DataMixin(NodeState):
     def data_retransmission(self):
         if not self.retransmit:
             return
-        
 
         for packet in self.retransmit.queued_packets:
             now = monotonic()

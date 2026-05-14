@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 BROADCAST_ADDRESS = NodeID(255)
 NETWORK_ID = b"\x0E\x1F\x7D\x2C"
 
-class CommandsMixin:
+class ProceduresMixin:
     node_id: NodeID
     rtc:     "RTC"
 
@@ -79,6 +79,7 @@ class CommandsMixin:
             self,
             packet: Packet,
             channel_info: Optional[Tuple[Frequency, BandAirtime, float]] = None,
+            show_usage : bool = False,
         ) -> None: ...
 
         def etx_receive(

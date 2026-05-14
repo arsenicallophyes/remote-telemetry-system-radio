@@ -12,7 +12,7 @@ from node.mac.band_airtime       import WaitTime
 from node.mac.duty_cycle_tracker import DutyCycleTracker
 from node.mac.channel_selection  import ChannelSelect
 
-from node.mixins.commands import CommandsMixin
+from node.mixins.procedures import ProceduresMixin
 from node.mixins.radio    import RadioMixin
 from node.mixins.utils    import UtilsMixin
 from node.mixins.control  import ControlMixin
@@ -22,7 +22,7 @@ from node.mixins.etx      import EtxMixin
 from node.protocol.parameters import (
     ControlParameters,
     Parameters,
-    CommandParameters,
+    RoutingParameters,
     add_timestamp,
     add_parameter,
 )
@@ -56,7 +56,7 @@ IMPLICIT_HEADER_MODE = False
 ACK_MESSAGE = 1
 NACK_IGNORE = "IGNORE"
 ORIGIN_SEQ_MAX = 256
-class Node(RadioMixin, UtilsMixin, ControlMixin, DataMixin, EtxMixin, CommandsMixin):
+class Node(RadioMixin, UtilsMixin, ControlMixin, DataMixin, EtxMixin, ProceduresMixin):
     """
     Node class
     """
@@ -125,6 +125,9 @@ class Node(RadioMixin, UtilsMixin, ControlMixin, DataMixin, EtxMixin, CommandsMi
 
     def startup(self):
         if self.boot:
+            return
+        if self.node_id == 0:
+            self.boot = True
             return
         print("Attemping to join network.")
         self.network_join(self.network_join_window)
@@ -197,7 +200,7 @@ class Node(RadioMixin, UtilsMixin, ControlMixin, DataMixin, EtxMixin, CommandsMi
                 print("etx_complete")
                 self.etx_complete(peer, successfully_transmitted_packets)
 
-            elif result:= parameters.get(CommandParameters.PATH_UPDATE):
+            elif result:= parameters.get(RoutingParameters.PATH_UPDATE):
 
                 destination = parameters.get(Parameters.DESTINATION)
                 if not isinstance(destination, int):
@@ -329,7 +332,7 @@ class Node(RadioMixin, UtilsMixin, ControlMixin, DataMixin, EtxMixin, CommandsMi
 
         hex_payload = table.serialize().hex()
 
-        message = add_parameter(None, CommandParameters.PATH_UPDATE, hex_payload)
+        message = add_parameter(None, RoutingParameters.PATH_UPDATE, hex_payload)
         message = add_parameter(message, Parameters.DESTINATION, str(int(destination)))
         message = add_timestamp(self.rtc.datetime, message)
 
@@ -406,11 +409,13 @@ class Node(RadioMixin, UtilsMixin, ControlMixin, DataMixin, EtxMixin, CommandsMi
             else:
                 if not self.connected_all_peers:
                     all_present = all(
-                        self.peer_table.get_peer(NodeID(i)) for i in range(1, 4)
+                        self.peer_table.get_peer(NodeID(i)) for i in range(1, 3)
                     )
+                    # all_present = self.peer_table.get_peer(NodeID(1))
                     if all_present:
                         self.connected_all_peers = True
-                        self._distribute_at = now + 90.0  # grace period
+                        self._distribute_at = now + 60.0  # grace period
+                        print("Distributing Routing Tables in 60 seconds...")
                 elif self.distributor and now >= self._distribute_at:
                     print("Distributing...")
                     print(self.distributor.distribute())

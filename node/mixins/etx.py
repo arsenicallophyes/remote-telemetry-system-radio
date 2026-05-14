@@ -66,6 +66,7 @@ class EtxMixin:
             self,
             packet: Packet,
             channel_info: Optional[Tuple[Frequency, BandAirtime, float]] = None,
+            show_usage : bool = False,
         ) -> None: ...
 
     def etx_transmit(

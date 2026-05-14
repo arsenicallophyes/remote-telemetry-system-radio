@@ -20,10 +20,10 @@ if BASE:
     graph = Graph()
     graph.add_node("A", NodeID(1))
     graph.add_node("B", NodeID(2))
-    graph.add_node("C", NodeID(3))
+    # graph.add_node("C", NodeID(3))
     graph.add_edge("BASE", "A", 1)
     graph.add_edge("A", "B", 1)
-    graph.add_edge("B", "C", 1)
+    # graph.add_edge("B", "C", 1)
 
     distributor = RoutingDistributor(node, graph)
     node.distributor = distributor

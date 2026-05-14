@@ -146,6 +146,7 @@ class RadioMixin:
         self,
         packet: Packet,
         channel_info: "Optional[Tuple[Frequency, BandAirtime, float]]" = None,
+        show_usage : bool = False,
     ) -> None:
         r = self.rfm9x
         if not channel_info:
@@ -162,3 +163,17 @@ class RadioMixin:
         )
 
         self.dc_tracker.commit_airtime(band.name, packet_time)
+        if show_usage:
+            bands = self.dc_tracker.get_registered_bands()
+            print("Bands Airtime Usage")
+            print("=" * 30)
+            for b in bands:
+                used = b.used()
+                print(
+                    f"Band {b.name}",
+                    f"Hourly Budget: {b.hourly_budget}s | Duty Cycle: {b.dc}%",
+                    f"Raw Usage: {used}",
+                    f"Percent Usage: {round(used * 100/b.hourly_budget, 2)}%",
+                    "=" * 30,
+                    sep="\n",
+                )
